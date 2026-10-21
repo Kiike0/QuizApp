@@ -13,7 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.myapplication.ui.QuizViewModel
 import com.example.myapplication.ui.admin.AdminScreen
-import com.example.myapplication.ui.auth.LoginScreen
+import com.example.myapplication.ui.login.LoginScreen
 import com.example.myapplication.ui.quiz.QuizScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 

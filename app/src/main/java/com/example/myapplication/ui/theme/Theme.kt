@@ -8,13 +8,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 private val LightColorScheme = lightColorScheme(
-    primary = NavyMedium,
+    primary = PistachioPrimary,
     onPrimary = Color.White,
-    primaryContainer = YellowContainer,
-    onPrimaryContainer = NavyDeep,
-    secondary = GoldAccent,
+    primaryContainer = PistachioContainer,
+    onPrimaryContainer = OnPistachioContainer,
+    secondary = NavyNavy,
     onSecondary = Color.White,
-    background = BackgroundSoftYellow,
+    background = BackgroundWhite,
     surface = SurfaceCard,
     onBackground = OnSurfaceText,
     onSurface = OnSurfaceText,
@@ -22,17 +22,17 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = GoldAccent,
-    onPrimary = NavyDeep,
-    primaryContainer = NavyMedium,
+    primary = PistachioLight,
+    onPrimary = OnPistachioContainer,
+    primaryContainer = PistachioDark,
     onPrimaryContainer = Color.White,
-    secondary = NavyLight,
+    secondary = PistachioPrimary,
     onSecondary = Color.White,
-    background = NavyDeep,
-    surface = Color(0xFF132238),
-    onBackground = Color(0xFFFFFBEB),
-    onSurface = Color(0xFFFFFBEB),
-    outline = Color(0xFF2A3E59)
+    background = Color(0xFF1B2E0B),
+    surface = Color(0xFF243B10),
+    onBackground = Color(0xFFF7FAF4),
+    onSurface = Color(0xFFF7FAF4),
+    outline = Color(0xFF3A591F)
 )
 
 @Composable

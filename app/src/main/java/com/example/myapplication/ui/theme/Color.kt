@@ -2,16 +2,18 @@ package com.example.myapplication.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val NavyDeep = Color(0xFF0B192C)
-val NavyMedium = Color(0xFF1E3E62)
-val NavyLight = Color(0xFF314E6E)
+// Paleta de Colores Verde Pistacho y Azul Marino
+val PistachioPrimary = Color(0xFF689F38)      // Verde pistacho fresco y elegante
+val PistachioDark = Color(0xFF33691E)         // Verde pistacho oscuro para contraste
+val PistachioLight = Color(0xFF8BC34A)        // Verde pistacho claro brillante
 
-val GoldAccent = Color(0xFFD97706)
-val GoldDark = Color(0xFFB45309)
-val YellowSoft = Color(0xFFFFFDFA)
-val YellowContainer = Color(0xFFFEF3C7)
+val NavyNavy = Color(0xFF0F2A4A)              // Azul marino elegante para "Quiz"
 
-val BackgroundSoftYellow = Color(0xFFFFFBEB) // Fondo amarillo suave profesional
+val PistachioContainer = Color(0xFFDCEDC8)    // Fondo contenedor verde pistacho suave
+val OnPistachioContainer = Color(0xFF1B3808)  // Texto sobre contenedor pistacho
+
+val BackgroundWhite = Color(0xFFFFFFFF)        // Fondo blanco puro para la app
 val SurfaceCard = Color(0xFFFFFFFF)
-val OnSurfaceText = Color(0xFF0F172A)
-val SubtitleText = Color(0xFF475569)
+val OnSurfaceText = Color(0xFF1C2D0D)
+val SubtitleText = Color(0xFF4A5D3B)
+

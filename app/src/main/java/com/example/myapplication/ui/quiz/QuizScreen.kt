@@ -1,17 +1,25 @@
 package com.example.myapplication.ui.quiz
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.example.myapplication.R
 import com.example.myapplication.ui.QuizViewModel
+import com.example.myapplication.ui.theme.NavyNavy
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,7 +32,29 @@ fun QuizScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Quiz Master", fontWeight = FontWeight.Bold) },
+                title = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo),
+                            contentDescription = "Logo",
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(style = SpanStyle(color = NavyNavy)) {
+                                    append("Quiz ")
+                                }
+                                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                    append("Desfakea")
+                                }
+                            },
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
                 actions = {
                     TextButton(onClick = { viewModel.logout() }) {
                         Text("Cerrar Sesión", color = MaterialTheme.colorScheme.primary)
@@ -34,6 +64,28 @@ fun QuizScreen(
                     containerColor = Color.Transparent
                 )
             )
+        },
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 12.dp, top = 4.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.imagotipocolegio),
+                    contentDescription = "Logo Colegio Profesional de Periodistas de Andalucía",
+                    modifier = Modifier.height(30.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Colegio Profesional de Periodistas de Andalucía",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                )
+            }
         },
         modifier = modifier
     ) { innerPadding ->
@@ -77,10 +129,17 @@ fun QuizScreen(
                         verticalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            text = "¡Quiz Finalizado!",
+                            text = buildAnnotatedString {
+                                append("¡")
+                                withStyle(style = SpanStyle(color = NavyNavy)) {
+                                    append("Quiz")
+                                }
+                                withStyle(style = SpanStyle(color = MaterialTheme.colorScheme.primary)) {
+                                    append(" Finalizado!")
+                                }
+                            },
                             style = MaterialTheme.typography.headlineMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            fontWeight = FontWeight.Bold
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
