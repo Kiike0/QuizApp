@@ -24,6 +24,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "quiz_database"
                 )
+                    .fallbackToDestructiveMigration(true)
                     .addCallback(DatabaseCallback())
                     .build()
                 INSTANCE = instance
