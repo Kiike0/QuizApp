@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import com.example.myapplication.R
 import com.example.myapplication.ui.QuizViewModel
 import com.example.myapplication.ui.theme.NavyNavy
@@ -25,6 +27,7 @@ import com.example.myapplication.ui.theme.NavyNavy
 @Composable
 fun QuizScreen(
     viewModel: QuizViewModel,
+    onBackToPanel: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -32,6 +35,16 @@ fun QuizScreen(
     Scaffold(
         topBar = {
             TopAppBar(
+                navigationIcon = {
+                    if (onBackToPanel != null) {
+                        IconButton(onClick = onBackToPanel) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Volver al Panel"
+                            )
+                        }
+                    }
+                },
                 title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(

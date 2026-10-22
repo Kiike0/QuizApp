@@ -12,9 +12,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.example.myapplication.ui.QuizViewModel
+import com.example.myapplication.ui.UserDestination
 import com.example.myapplication.ui.admin.AdminScreen
 import com.example.myapplication.ui.login.LoginScreen
+import com.example.myapplication.ui.panel.UserPanelScreen
 import com.example.myapplication.ui.quiz.QuizScreen
+import com.example.myapplication.ui.user.CreateQuestionScreen
 import com.example.myapplication.ui.theme.MyApplicationTheme
 
 class MainActivity : ComponentActivity() {
@@ -40,10 +43,22 @@ class MainActivity : ComponentActivity() {
                             modifier = Modifier.padding(innerPadding)
                         )
                     } else {
-                        QuizScreen(
-                            viewModel = quizViewModel,
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                        when (uiState.currentDestination) {
+                            UserDestination.PANEL -> UserPanelScreen(
+                                viewModel = quizViewModel,
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                            UserDestination.QUIZ -> QuizScreen(
+                                viewModel = quizViewModel,
+                                onBackToPanel = { quizViewModel.navigateToDestination(UserDestination.PANEL) },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                            UserDestination.CREATE_QUESTION -> CreateQuestionScreen(
+                                viewModel = quizViewModel,
+                                onBackToPanel = { quizViewModel.navigateToDestination(UserDestination.PANEL) },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                        }
                     }
                 }
             }

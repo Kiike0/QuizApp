@@ -8,5 +8,6 @@ data class UserEntity(
     @PrimaryKey
     val email: String,
     val password: String,
+    val username: String = "",
     val isAdmin: Boolean = false
 )

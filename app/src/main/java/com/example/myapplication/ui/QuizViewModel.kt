@@ -1,6 +1,7 @@
 package com.example.myapplication.ui
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.QuizRepository
@@ -10,9 +11,18 @@ import com.example.myapplication.data.local.UserEntity
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
+import androidx.core.content.edit
+
+enum class UserDestination {
+    PANEL,
+    QUIZ,
+    CREATE_QUESTION
+}
+
 data class QuizUiState(
     val email: String = "",
     val password: String = "",
+    val username: String = "",
     val isRegistering: Boolean = false,
     val isLoggedIn: Boolean = false,
     val isAdmin: Boolean = false,
@@ -20,13 +30,16 @@ data class QuizUiState(
     val questions: List<QuestionEntity> = emptyList(),
     val users: List<UserEntity> = emptyList(),
     
+    // User Navigation
+    val currentDestination: UserDestination = UserDestination.PANEL,
+
     // Quiz state
     val currentQuestionIndex: Int = 0,
     val selectedAnswers: Map<Int, String> = emptyMap(), // questionIndex -> selectedOption ("A", "B", "C", "D")
     val quizFinished: Boolean = false,
     val score: Int = 0,
 
-    // Admin question creation state
+    // Question creation state
     val newQuestionText: String = "",
     val newOptionA: String = "",
     val newOptionB: String = "",
@@ -38,6 +51,7 @@ data class QuizUiState(
 
 class QuizViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: QuizRepository
+    private val sharedPreferences = application.getSharedPreferences("user_session_prefs", Context.MODE_PRIVATE)
 
     private val _uiState = MutableStateFlow(QuizUiState())
     val uiState: StateFlow<QuizUiState> = _uiState.asStateFlow()
@@ -46,10 +60,35 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         val db = AppDatabase.getDatabase(application)
         repository = QuizRepository(db.appDao())
 
+        // Restore persisted user session if available
+        val savedIsLoggedIn = sharedPreferences.getBoolean("is_logged_in", false)
+        if (savedIsLoggedIn) {
+            val savedEmail = sharedPreferences.getString("logged_email", "") ?: ""
+            val savedUsername = sharedPreferences.getString("logged_username", "") ?: ""
+            val savedIsAdmin = sharedPreferences.getBoolean("is_admin", false)
+
+            _uiState.update {
+                it.copy(
+                    isLoggedIn = true,
+                    email = savedEmail,
+                    username = savedUsername,
+                    isAdmin = savedIsAdmin,
+                    currentDestination = UserDestination.PANEL
+                )
+            }
+        }
+
         // Ensure admin user exists in DB on startup
         viewModelScope.launch {
             if (repository.getUserByEmail("admin@admin.es") == null) {
-                repository.insertUser(UserEntity("admin@admin.es", "admin0090", true))
+                repository.insertUser(
+                    UserEntity(
+                        email = "admin@admin.es",
+                        password = "admin0090",
+                        username = "Administrador",
+                        isAdmin = true
+                    )
+                )
             }
         }
 
@@ -68,6 +107,21 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    private fun saveSession(email: String, username: String, isAdmin: Boolean) {
+        sharedPreferences.edit {
+            putBoolean("is_logged_in", true)
+            putString("logged_email", email)
+            putString("logged_username", username)
+            putBoolean("is_admin", isAdmin)
+        }
+    }
+
+    private fun clearSession() {
+        sharedPreferences.edit {
+            clear()
+        }
+    }
+
     fun onEmailChanged(email: String) {
         _uiState.update { it.copy(email = email, errorMessage = null) }
     }
@@ -76,8 +130,21 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(password = password, errorMessage = null) }
     }
 
+    fun onUsernameChanged(username: String) {
+        _uiState.update { it.copy(username = username, errorMessage = null) }
+    }
+
     fun toggleRegisterMode() {
         _uiState.update { it.copy(isRegistering = !it.isRegistering, errorMessage = null) }
+    }
+
+    fun navigateToDestination(destination: UserDestination) {
+        _uiState.update { it.copy(currentDestination = destination) }
+    }
+
+    fun startQuiz() {
+        restartQuiz()
+        navigateToDestination(UserDestination.QUIZ)
     }
 
     fun loginOrRegister() {
@@ -87,19 +154,48 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
             return
         }
 
+        if (state.isRegistering && state.username.isBlank()) {
+            _uiState.update { it.copy(errorMessage = "Por favor, introduce un nombre de usuario") }
+            return
+        }
+
         viewModelScope.launch {
             val user = repository.getUserByEmail(state.email.trim())
             if (state.isRegistering) {
                 if (user != null) {
                     _uiState.update { it.copy(errorMessage = "El usuario ya existe") }
                 } else {
-                    val newUser = UserEntity(email = state.email.trim(), password = state.password, isAdmin = false)
+                    val newUser = UserEntity(
+                        email = state.email.trim(),
+                        password = state.password,
+                        username = state.username.trim(),
+                        isAdmin = false
+                    )
                     repository.insertUser(newUser)
-                    _uiState.update { it.copy(isLoggedIn = true, isAdmin = false, errorMessage = null) }
+                    saveSession(state.email.trim(), state.username.trim(), false)
+                    _uiState.update {
+                        it.copy(
+                            isLoggedIn = true,
+                            isAdmin = false,
+                            username = state.username.trim(),
+                            errorMessage = null,
+                            currentDestination = UserDestination.PANEL
+                        )
+                    }
                 }
             } else {
                 if (user != null && user.password == state.password) {
-                    _uiState.update { it.copy(isLoggedIn = true, isAdmin = user.isAdmin, errorMessage = null) }
+                    val displayUsername = user.username.ifBlank { user.email.substringBefore("@") }
+                    saveSession(user.email, displayUsername, user.isAdmin)
+                    _uiState.update {
+                        it.copy(
+                            isLoggedIn = true,
+                            isAdmin = user.isAdmin,
+                            username = displayUsername,
+                            errorMessage = null,
+                            currentDestination = UserDestination.PANEL
+                        )
+                    }
                 } else {
                     _uiState.update { it.copy(errorMessage = "Correo o contraseña incorrectos") }
                 }
@@ -108,12 +204,13 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
+        clearSession()
         _uiState.update {
-            QuizUiState(questions = it.questions, users = it.users)
+            QuizUiState(questions = it.questions, users = it.users, currentDestination = UserDestination.PANEL)
         }
     }
 
-    // Admin functions
+    // Admin & User question creation functions
     fun onNewQuestionTextChanged(text: String) {
         _uiState.update { it.copy(newQuestionText = text, adminMessage = null) }
     }
