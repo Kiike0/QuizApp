@@ -86,8 +86,8 @@ fun UserPanelScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .widthIn(max = 480.dp)
+                    .widthIn(max = 400.dp)
+                    .fillMaxWidth()
                     .padding(horizontal = 24.dp, vertical = 16.dp)
                     .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
