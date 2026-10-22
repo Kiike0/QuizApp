@@ -13,11 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
 import com.example.myapplication.ui.QuizViewModel
+import com.example.myapplication.util.SoundManager
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -26,6 +28,7 @@ fun AdminScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     // Estados para los diálogos de confirmación
     var userToDelete by remember { mutableStateOf<String?>(null) }
@@ -94,14 +97,20 @@ fun AdminScreen(
 
                             OutlinedTextField(
                                 value = uiState.newQuestionText,
-                                onValueChange = { viewModel.onNewQuestionTextChanged(it) },
+                                onValueChange = {
+                                    SoundManager.playTypingSound(context)
+                                    viewModel.onNewQuestionTextChanged(it)
+                                },
                                 label = { Text("Enunciado de la pregunta") },
                                 modifier = Modifier.fillMaxWidth()
                             )
 
                             OutlinedTextField(
                                 value = uiState.newOptionA,
-                                onValueChange = { viewModel.onNewOptionAChanged(it) },
+                                onValueChange = {
+                                    SoundManager.playTypingSound(context)
+                                    viewModel.onNewOptionAChanged(it)
+                                },
                                 label = { Text("Opción A") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
@@ -109,7 +118,10 @@ fun AdminScreen(
 
                             OutlinedTextField(
                                 value = uiState.newOptionB,
-                                onValueChange = { viewModel.onNewOptionBChanged(it) },
+                                onValueChange = {
+                                    SoundManager.playTypingSound(context)
+                                    viewModel.onNewOptionBChanged(it)
+                                },
                                 label = { Text("Opción B") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
@@ -117,7 +129,10 @@ fun AdminScreen(
 
                             OutlinedTextField(
                                 value = uiState.newOptionC,
-                                onValueChange = { viewModel.onNewOptionCChanged(it) },
+                                onValueChange = {
+                                    SoundManager.playTypingSound(context)
+                                    viewModel.onNewOptionCChanged(it)
+                                },
                                 label = { Text("Opción C") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
@@ -125,7 +140,10 @@ fun AdminScreen(
 
                             OutlinedTextField(
                                 value = uiState.newOptionD,
-                                onValueChange = { viewModel.onNewOptionDChanged(it) },
+                                onValueChange = {
+                                    SoundManager.playTypingSound(context)
+                                    viewModel.onNewOptionDChanged(it)
+                                },
                                 label = { Text("Opción D") },
                                 modifier = Modifier.fillMaxWidth(),
                                 singleLine = true
