@@ -9,7 +9,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@Database(entities = [UserEntity::class, QuestionEntity::class], version = 2, exportSchema = false)
+@Database(entities = [UserEntity::class, QuestionEntity::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appDao(): AppDao
 
@@ -53,17 +53,10 @@ abstract class AppDatabase : RoomDatabase() {
                     )
                 )
 
-                // Add sample question
-                dao.insertQuestion(
-                    QuestionEntity(
-                        questionText = "¿Cuál es el lenguaje principal para desarrollar apps Android nativas?",
-                        optionA = "Python",
-                        optionB = "Kotlin",
-                        optionC = "C++",
-                        optionD = "Ruby",
-                        correctAnswer = "B"
-                    )
-                )
+                // Populate 100 default intrinsic questions
+                DefaultQuestions.list.forEach { question ->
+                    dao.insertQuestion(question)
+                }
             }
         }
     }

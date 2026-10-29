@@ -2,21 +2,22 @@ package com.example.myapplication.ui
 
 import android.app.Application
 import android.content.Context
+import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.myapplication.data.QuizRepository
 import com.example.myapplication.data.local.AppDatabase
+import com.example.myapplication.data.local.DefaultQuestions
 import com.example.myapplication.data.local.QuestionEntity
 import com.example.myapplication.data.local.UserEntity
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
-import androidx.core.content.edit
-
 enum class UserDestination {
     PANEL,
     QUIZ,
-    CREATE_QUESTION
+    CREATE_QUESTION,
+    MANAGE_USERS
 }
 
 data class QuizUiState(
@@ -28,6 +29,7 @@ data class QuizUiState(
     val isAdmin: Boolean = false,
     val errorMessage: String? = null,
     val questions: List<QuestionEntity> = emptyList(),
+    val activeQuizQuestions: List<QuestionEntity> = emptyList(), // 10 random questions for current quiz
     val users: List<UserEntity> = emptyList(),
     
     // User Navigation
@@ -92,9 +94,14 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
 
-        // Collect questions
+        // Collect questions and populate default questions if empty
         viewModelScope.launch {
             repository.allQuestions.collect { list ->
+                if (list.isEmpty()) {
+                    DefaultQuestions.list.forEach { question ->
+                        repository.insertQuestion(question)
+                    }
+                }
                 _uiState.update { it.copy(questions = list) }
             }
         }
@@ -274,12 +281,13 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
 
     fun nextQuestion() {
         val state = _uiState.value
-        if (state.currentQuestionIndex < state.questions.size - 1) {
+        val activeQuestions = if (state.activeQuizQuestions.isNotEmpty()) state.activeQuizQuestions else state.questions
+        if (state.currentQuestionIndex < activeQuestions.size - 1) {
             _uiState.update { it.copy(currentQuestionIndex = it.currentQuestionIndex + 1) }
         } else {
             // Calculate score
             var calculatedScore = 0
-            state.questions.forEachIndexed { index, question ->
+            activeQuestions.forEachIndexed { index, question ->
                 val selected = state.selectedAnswers[index]
                 if (selected == question.correctAnswer) {
                     calculatedScore++
@@ -297,8 +305,11 @@ class QuizViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun restartQuiz() {
+        val allQuestions = _uiState.value.questions
+        val randomTen = if (allQuestions.size > 10) allQuestions.shuffled().take(10) else allQuestions.shuffled()
         _uiState.update {
             it.copy(
+                activeQuizQuestions = randomTen,
                 currentQuestionIndex = 0,
                 selectedAnswers = emptyMap(),
                 quizFinished = false,

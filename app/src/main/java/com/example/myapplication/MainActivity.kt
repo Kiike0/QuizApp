@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import com.example.myapplication.ui.QuizViewModel
 import com.example.myapplication.ui.UserDestination
 import com.example.myapplication.ui.admin.AdminScreen
+import com.example.myapplication.ui.admin.ManageUsersScreen
 import com.example.myapplication.ui.login.LoginScreen
 import com.example.myapplication.ui.panel.UserPanelScreen
 import com.example.myapplication.ui.quiz.QuizScreen
@@ -37,23 +38,32 @@ class MainActivity : ComponentActivity() {
                             viewModel = quizViewModel,
                             modifier = Modifier.padding(innerPadding)
                         )
-                    } else if (uiState.isAdmin) {
-                        AdminScreen(
-                            viewModel = quizViewModel,
-                            modifier = Modifier.padding(innerPadding)
-                        )
                     } else {
                         when (uiState.currentDestination) {
-                            UserDestination.PANEL -> UserPanelScreen(
-                                viewModel = quizViewModel,
-                                modifier = Modifier.padding(innerPadding)
-                            )
+                            UserDestination.PANEL -> {
+                                if (uiState.isAdmin) {
+                                    AdminScreen(
+                                        viewModel = quizViewModel,
+                                        modifier = Modifier.padding(innerPadding)
+                                    )
+                                } else {
+                                    UserPanelScreen(
+                                        viewModel = quizViewModel,
+                                        modifier = Modifier.padding(innerPadding)
+                                    )
+                                }
+                            }
                             UserDestination.QUIZ -> QuizScreen(
                                 viewModel = quizViewModel,
                                 onBackToPanel = { quizViewModel.navigateToDestination(UserDestination.PANEL) },
                                 modifier = Modifier.padding(innerPadding)
                             )
                             UserDestination.CREATE_QUESTION -> CreateQuestionScreen(
+                                viewModel = quizViewModel,
+                                onBackToPanel = { quizViewModel.navigateToDestination(UserDestination.PANEL) },
+                                modifier = Modifier.padding(innerPadding)
+                            )
+                            UserDestination.MANAGE_USERS -> ManageUsersScreen(
                                 viewModel = quizViewModel,
                                 onBackToPanel = { quizViewModel.navigateToDestination(UserDestination.PANEL) },
                                 modifier = Modifier.padding(innerPadding)

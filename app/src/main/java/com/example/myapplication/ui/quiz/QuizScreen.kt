@@ -33,6 +33,7 @@ fun QuizScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val activeQuestions = if (uiState.activeQuizQuestions.isNotEmpty()) uiState.activeQuizQuestions else uiState.questions
 
     Scaffold(
         topBar = {
@@ -118,7 +119,7 @@ fun QuizScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                if (uiState.questions.isEmpty()) {
+                if (activeQuestions.isEmpty()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
@@ -137,7 +138,7 @@ fun QuizScreen(
                     }
                 } else if (uiState.quizFinished) {
                     // Pantalla de resultados
-                    val isPerfectScore = uiState.score == uiState.questions.size
+                    val isPerfectScore = uiState.score == activeQuestions.size
 
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -184,7 +185,7 @@ fun QuizScreen(
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "${uiState.score} / ${uiState.questions.size}",
+                                text = "${uiState.score} / ${activeQuestions.size}",
                                 style = MaterialTheme.typography.displayLarge.copy(fontWeight = FontWeight.Bold),
                                 color = MaterialTheme.colorScheme.primary
                             )
@@ -203,7 +204,7 @@ fun QuizScreen(
                         }
                     }
                 } else {
-                    val currentQuestion = uiState.questions.getOrNull(uiState.currentQuestionIndex)
+                    val currentQuestion = activeQuestions.getOrNull(uiState.currentQuestionIndex)
                     val selectedOption = uiState.selectedAnswers[uiState.currentQuestionIndex]
 
                     if (currentQuestion != null) {
@@ -220,7 +221,7 @@ fun QuizScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
                                     Text(
-                                        text = "Pregunta ${uiState.currentQuestionIndex + 1} de ${uiState.questions.size}",
+                                        text = "Pregunta ${uiState.currentQuestionIndex + 1} de ${activeQuestions.size}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         fontWeight = FontWeight.Bold,
                                         color = MaterialTheme.colorScheme.primary
@@ -228,7 +229,7 @@ fun QuizScreen(
                                 }
                                 Spacer(modifier = Modifier.height(8.dp))
                                 LinearProgressIndicator(
-                                    progress = { (uiState.currentQuestionIndex + 1).toFloat() / uiState.questions.size },
+                                    progress = { (uiState.currentQuestionIndex + 1).toFloat() / activeQuestions.size },
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(8.dp),
@@ -327,7 +328,7 @@ fun QuizScreen(
                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                                 ) {
                                     Text(
-                                        text = if (uiState.currentQuestionIndex == uiState.questions.size - 1) "Finalizar" else "Siguiente",
+                                        text = if (uiState.currentQuestionIndex == activeQuestions.size - 1) "Finalizar" else "Siguiente",
                                         fontWeight = FontWeight.Bold
                                     )
                                 }

@@ -6,7 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -22,7 +21,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.myapplication.R
 import com.example.myapplication.ui.QuizViewModel
-import com.example.myapplication.ui.UserDestination
 import com.example.myapplication.ui.theme.NavyNavy
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -114,71 +112,33 @@ fun UserPanelScreen(
 
                 Spacer(modifier = Modifier.height(36.dp))
 
-                // Fila de botones de acción directo (Play y +)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
+                // Botón central único (Play ▶) para iniciar el Quiz
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Botón 1: Iniciar Quiz (Play)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
+                    Surface(
+                        onClick = { viewModel.startQuiz() },
+                        shape = RoundedCornerShape(24.dp),
+                        color = MaterialTheme.colorScheme.primary,
+                        shadowElevation = 8.dp,
+                        modifier = Modifier.size(88.dp)
                     ) {
-                        Surface(
-                            onClick = { viewModel.startQuiz() },
-                            shape = RoundedCornerShape(20.dp),
-                            color = MaterialTheme.colorScheme.primary,
-                            shadowElevation = 6.dp,
-                            modifier = Modifier.size(76.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Iniciar Quiz",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(44.dp)
-                                )
-                            }
+                        Box(contentAlignment = Alignment.Center) {
+                            Icon(
+                                imageVector = Icons.Default.PlayArrow,
+                                contentDescription = "Iniciar Quiz",
+                                tint = Color.White,
+                                modifier = Modifier.size(52.dp)
+                            )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "Iniciar Quiz",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = NavyNavy
-                        )
                     }
-
-                    Spacer(modifier = Modifier.width(48.dp))
-
-                    // Botón 2: Crear Quiz (+)
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Surface(
-                            onClick = { viewModel.navigateToDestination(UserDestination.CREATE_QUESTION) },
-                            shape = RoundedCornerShape(20.dp),
-                            color = NavyNavy,
-                            shadowElevation = 6.dp,
-                            modifier = Modifier.size(76.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Crear Quiz",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(44.dp)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        Text(
-                            text = "Crear Quiz",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = NavyNavy
-                        )
-                    }
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Iniciar Quiz",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = NavyNavy
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
